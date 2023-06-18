@@ -3,28 +3,31 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart';
 
+var data = [];
 
 final apiProvider = FutureProvider<List<dynamic>>((ref) async {
-  var data = [];
-  var page = ref.watch(myProvider);
-  final response = await get(Uri.parse('https://jsonplaceholder.typicode.com/todos?_page=$page&_limit=10'));
+  ref.onDispose(() {
+    ref.read(countProvider.notifier).dispose();
 
-  if (response.statusCode == 200) {
-    final res = jsonDecode(response.body) as List<dynamic>;
-    if(res.isNotEmpty){
-      data.addAll(res);
+  });
+  var page = ref.watch(countProvider);
+ //  print("^^^^^ $page");
+  try{
+    final response = await get(Uri.parse('https://jsonplaceholder.typicode.com/todos?_page=$page'));
+    if (response.statusCode == 200) {
+      final res = jsonDecode(response.body) as List<dynamic>;
+      if(res.isNotEmpty){
+        data.addAll(res);
+      }else{
+      }
+      return data;
+    } else {
+      throw Exception('Failed to load data');
     }
-    return data;
-  } else {
-    throw Exception('Failed to load data');
-  }
+  }catch(e){}
+  return data;
+
 });
 
-final myScrollControllerProvider =
-ChangeNotifierProvider.autoDispose((ref) => ScrollController());
-final myProvider = Provider<int>((ref) => ref.watch(pageProvider));
-
-final pageProvider = StateProvider<int>((ref) => 1);
-
-
+final countProvider = StateProvider<int>((ref) => 1);
 

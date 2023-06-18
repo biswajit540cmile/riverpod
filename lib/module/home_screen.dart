@@ -10,7 +10,7 @@ class HomeScreen extends StatelessWidget {
       appBar: AppBar(title: const Text("Riverpod"),centerTitle: true,),
       body: Center(child: MaterialButton( onPressed: ()=> Navigator.of(context).push(
         MaterialPageRoute(
-          builder: (context) =>  ViewData(),
+          builder: (context) =>  const ViewData(),
         ),
       ),child: const Text("Click Me")),),
     );
